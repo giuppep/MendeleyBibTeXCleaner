@@ -10,7 +10,7 @@ ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
             'tags', 'volume', 'edition', 'issn', 'title', 'number',
             'archiveprefix', 'file', 'series', 'primaryclass', 'author',
             'publisher', 'pages', 'keyword', 'journal', 'arxivid', 'booktitle',
-            'doi', 'pmid', 'url']
+            'doi', 'pmid', 'url', 'day', 'country', 'chapter', 'issue']
 
 
 def create_config():
@@ -78,7 +78,7 @@ def fix_month(bib_file):
         for line in bibtex:
             if 'month' in line:
                 line = re.sub(r'{(\w\w\w)}', r'\g<1>', line)
-            print(line.rstrip())
+            click.echo(line.rstrip())
 
 
 @click.command()
@@ -90,17 +90,17 @@ def fix_month(bib_file):
 @click.option('--month', default=False, is_flag=True,
               help="Removes braces around the 'month' field.")
 def cli(bib_file=None, save_to=None, overwrite=False, month=False):
-    """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX categories (e.g. author, title...) should be mantained; all other categories will be deleted."""
+    """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
     # Loads the keys that need to be maintained
     good_keys = load_config()
 
-    # Output filename
+    # Sets output filename
     if overwrite:
         save_to = bib_file
     elif not save_to:
         save_to = bib_file[:-4] + '_edited.bib'
 
-    # Define the parser
+    # Defines the parser
     parser = btp.bparser.BibTexParser()
     parser.ignore_nonstandard_types = True
     parser.homogenize_fields = True
@@ -111,15 +111,15 @@ def cli(bib_file=None, save_to=None, overwrite=False, month=False):
         bibliography_str = f.read()
     bibliography = btp.loads(bibliography_str, parser)
 
-    # bibliography = rename_keys(bibliography)
+    # Renames certain non-standard keys
+    bibliography = rename_keys(bibliography)
+
     # Cleans the bibliography
     bibliography = clean_keys(bibliography, good_keys)
 
     # Saves the bibliography
     save_bib(bibliography, filename=save_to)
-    if month:
-        print('fixing months')
-        fix_month(save_to)
 
-# if __name__ == '__main__':
-#     main()
+    # If --month flag is active, it fixes the 'month' field formatting
+    if month:
+        fix_month(save_to)
