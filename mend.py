@@ -2,6 +2,7 @@ import bibtexparser as btp
 import click
 import time
 import sys
+import fileinput
 import re
 
 CONFIG_FILE = 'config.ini'
@@ -72,15 +73,12 @@ def rename_keys(bibliography):
 
 def fix_month(bib_file):
     """Fixes the 'month' field by removing braces. Both Mendeley and BibTexParser print the month withing braces (e.g. {jun}) which does not work correctly with BibTeX."""
-    lines = []
-    with open(bib_file, 'r') as bibtex:
+
+    with fileinput.input(bib_file, inplace=True) as bibtex:
         for line in bibtex:
             if 'month' in line:
                 line = re.sub(r'{(\w\w\w)}', r'\g<1>', line)
-            lines.append(line)
-
-    with open(bib_file, 'w') as bibtex:
-        bibtex.writelines(lines)
+            print(line.rstrip())
 
 
 @click.command()
