@@ -13,6 +13,7 @@ ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
 
 
 def create_config():
+    """Creates configuration file."""
     with open(CONFIG_FILE, 'w') as config:
         config.write(
             '# Comment with "#" the lines corresponding to the keys that you DO NOT want in the processed bib file.')
@@ -21,6 +22,7 @@ def create_config():
 
 
 def load_config():
+    """Loads the configuration file. If not found, it creates the file and exists the app."""
     good_keys = []
     try:
         with open(CONFIG_FILE, 'r') as config:
@@ -35,13 +37,13 @@ def load_config():
             CONFIG_FILE))
         time.sleep(1)
         create_config()
-        print('{} created. Please edit the configuration file before running the app again.'.format(
+        print('\n{} created. Please edit the configuration file before running the app again.\n'.format(
             CONFIG_FILE))
         sys.exit(0)
 
 
 def save_bib(bibliography, filename='bibliography.bib'):
-    print('oi')
+    """Saves the bibiliography to a file."""
     with open(filename, 'w') as bibtex_file:
         btp.dump(bibliography, bibtex_file)
 
@@ -63,18 +65,21 @@ def clean_keys(bibliography, good_keys=None):
 # @click.option('--bib', default='Remote.bib', help='Specify bibliography file')
 # @click.command()
 # @click.argument('bib_file')
-
-
-def main():
+@click.command()
+@click.argument('bib_file')
+@click.option('--dest', default=None, help='Specify the name of the output file. By default it appends "edited" to the original filename')
+def main(bib_file=None, dest=None):
     good_keys = load_config()
+    if not dest:
+        dest = bib_file[-3:] + '_edited.bib'
     # print(good_keys)
-    bib_file = 'Remote.bib'
+    # bib_file = 'Remote.bib'
     with open(bib_file, 'r') as f:
         bibliography_str = f.read()
     bibliography = btp.loads(bibliography_str)
     bibliography = clean_keys(bibliography, good_keys)
     # print(bibliography.entries[3])
-    save_bib(bibliography)
+    save_bib(bibliography, filename=dest)
 
 
 if __name__ == '__main__':
