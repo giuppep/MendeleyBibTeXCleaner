@@ -2,14 +2,14 @@ from setuptools import setup
 
 setup(
     name='MendeleyBibTeXCleaner',
-    version='0.1',
-    py_modules=['mend'],
+    version='0.2',
+    py_modules=['mendeleycleaner'],
     install_requires=[
         'click',
         'bibtexparser'
     ],
     entry_points='''
         [console_scripts]
-        mend=mend:cli
+        mendeleycleaner=mendeleycleaner:cli
     ''',
 )
