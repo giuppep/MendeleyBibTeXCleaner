@@ -1,6 +1,8 @@
 import pickle
 import bibtexparser as btp
 import click
+import time
+import sys
 
 CONFIG_FILE = 'mend.config'
 ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
@@ -29,10 +31,13 @@ def load_config():
         good_keys.append('id')
         return good_keys
     except:
-        print('Could not find the file {}. Creating new configuration file.'.format(
+        print('Could not find the file {}. Creating new configuration file...'.format(
             CONFIG_FILE))
+        time.sleep(1)
         create_config()
-        return ALL_KEYS
+        print('{} created. Please edit the configuration file before running the app again.'.format(
+            CONFIG_FILE))
+        sys.exit(0)
 
 
 def save_bib(bibliography, filename='bibliography.bib'):
@@ -54,9 +59,6 @@ def clean_keys(bibliography, good_keys=None):
 
     return bibliography
 
-
-def format_arXiv_entries():
-    pass
 
 # @click.option('--bib', default='Remote.bib', help='Specify bibliography file')
 # @click.command()
