@@ -62,15 +62,17 @@ def clean_keys(bibliography, good_keys=None):
 
 @click.command()
 @click.argument('bib_file')
-@click.option('--dest', default=None, help='Specify the name of the output file. By default it appends "edited" to the original filename')
-# @click.option('--overwrite', default=False)
-def cli(bib_file=None, dest=None):
+@click.option('--save-to', default=None, help='Specify the name of the output file. By default it appends "edited" to the original filename')
+@click.option('--overwrite', default=False, is_flag=True, help='Overwrite original file')
+def cli(bib_file=None, save_to=None, overwrite=False):
     # Loads the keys that need to be maintained
     good_keys = load_config()
 
     # Output filename
-    if not dest:
-        dest = bib_file[-3:] + '_edited.bib'
+    if overwrite:
+        save_to = bib_file
+    elif not save_to:
+        save_to = bib_file[:-4] + '_edited.bib'
 
     # Loads the original bibliography
     with open(bib_file, 'r') as f:
@@ -81,7 +83,7 @@ def cli(bib_file=None, dest=None):
     bibliography = clean_keys(bibliography, good_keys)
 
     # Saves the bibliography
-    save_bib(bibliography, filename=dest)
+    save_bib(bibliography, filename=save_to)
 
 # if __name__ == '__main__':
 #     main()
