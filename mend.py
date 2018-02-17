@@ -2,6 +2,7 @@ import bibtexparser as btp
 import click
 import time
 import sys
+import re
 
 CONFIG_FILE = 'config.ini'
 ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
@@ -60,14 +61,37 @@ def clean_keys(bibliography, good_keys=None):
     return bibliography
 
 
-# def format_arXiv_entries(bibliography):
+def rename_keys(bibliography):
+    """Corrects certain keys names."""
+    for entry in bibliography.entries:
+        for key in entry.keys():
+            if key.lower() is 'primaryclass':
+                entry['archive'] = entry.pop(key)
+    return bibliography
+
+
+def fix_month(bib_file):
+    """Fixes the 'month' field by removing braces. Both Mendeley and BibTexParser print the month withing braces (e.g. {jun}) which does not work correctly with BibTeX."""
+    lines = []
+    with open(bib_file, 'r') as bibtex:
+        for line in bibtex:
+            if 'month' in line:
+                line = re.sub(r'{(\w\w\w)}', r'\g<1>', line)
+            lines.append(line)
+
+    with open(bib_file, 'w') as bibtex:
+        bibtex.writelines(lines)
 
 
 @click.command()
 @click.argument('bib_file')
-@click.option('--save-to', default=None, help='Specify the name of the output file. By default it appends "edited" to the original filename')
-@click.option('--overwrite', default=False, is_flag=True, help='Overwrites original file.')
-def cli(bib_file=None, save_to=None, overwrite=False):
+@click.option('--save-to', default=None,
+              help='Specify the name of the output file. By default it appends "edited" to the original filename')
+@click.option('--overwrite', default=False, is_flag=True,
+              help='Overwrites original file.')
+@click.option('--month', default=False, is_flag=True,
+              help="Removes braces around the 'month' field.")
+def cli(bib_file=None, save_to=None, overwrite=False, month=False):
     """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX categories (e.g. author, title...) should be mantained; all other categories will be deleted."""
     # Loads the keys that need to be maintained
     good_keys = load_config()
@@ -78,16 +102,26 @@ def cli(bib_file=None, save_to=None, overwrite=False):
     elif not save_to:
         save_to = bib_file[:-4] + '_edited.bib'
 
+    # Define the parser
+    parser = btp.bparser.BibTexParser()
+    parser.ignore_nonstandard_types = True
+    parser.homogenize_fields = True
+    parser.common_strings = True
+
     # Loads the original bibliography
     with open(bib_file, 'r') as f:
         bibliography_str = f.read()
-    bibliography = btp.loads(bibliography_str)
+    bibliography = btp.loads(bibliography_str, parser)
 
+    # bibliography = rename_keys(bibliography)
     # Cleans the bibliography
     bibliography = clean_keys(bibliography, good_keys)
 
     # Saves the bibliography
     save_bib(bibliography, filename=save_to)
+    if month:
+        print('fixing months')
+        fix_month(save_to)
 
 # if __name__ == '__main__':
 #     main()
