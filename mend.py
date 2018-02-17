@@ -84,7 +84,7 @@ def fix_month(bib_file):
 @click.command()
 @click.argument('bib_file')
 @click.option('--save-to', default=None,
-              help='Specify the name of the output file. By default it appends "edited" to the original filename')
+              help='Specify the name of the output file. By default it appends "edited" to the original filename.')
 @click.option('--overwrite', default=False, is_flag=True,
               help='Overwrites original file.')
 @click.option('--month', default=False, is_flag=True,
