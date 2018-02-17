@@ -3,8 +3,8 @@ import click
 import time
 import sys
 
-CONFIG_FILE = 'mend.config'
-ALL_KEYS = ['link', 'month', 'isbn', 'eclick.echo', 'address', 'abstract',
+CONFIG_FILE = 'config.ini'
+ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
             'tags', 'volume', 'edition', 'issn', 'title', 'number',
             'archiveprefix', 'file', 'series', 'primaryclass', 'author',
             'publisher', 'pages', 'keyword', 'journal', 'arxivid', 'booktitle',
@@ -15,7 +15,7 @@ def create_config():
     """Creates configuration file."""
     with open(CONFIG_FILE, 'w') as config:
         config.write(
-            '# Comment with "#" (or delete) the lines corresponding to the keys that you DO NOT want in the processed bib file.')
+            '# Configuration file for MendeleyBibTeXCleaner\n#\n# Comment with "#" (or delete) the lines corresponding to the keys\n# that you DO NOT want in the processed bib file.')
         for key in ALL_KEYS:
             config.write(key + '\n')
 
@@ -60,11 +60,15 @@ def clean_keys(bibliography, good_keys=None):
     return bibliography
 
 
+# def format_arXiv_entries(bibliography):
+
+
 @click.command()
 @click.argument('bib_file')
 @click.option('--save-to', default=None, help='Specify the name of the output file. By default it appends "edited" to the original filename')
-@click.option('--overwrite', default=False, is_flag=True, help='Overwrite original file')
+@click.option('--overwrite', default=False, is_flag=True, help='Overwrites original file.')
 def cli(bib_file=None, save_to=None, overwrite=False):
+    """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX categories (e.g. author, title...) should be mantained; all other categories will be deleted."""
     # Loads the keys that need to be maintained
     good_keys = load_config()
 
