@@ -5,6 +5,7 @@ import sys
 import fileinput
 import os
 import re
+from subprocess import call
 
 CONFIG_FILE_PATH = os.getenv("HOME") + '/.MendeleyBibTeXCleaner/'
 CONFIG_FILE = CONFIG_FILE_PATH + 'config.ini'
@@ -14,15 +15,31 @@ ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
             'publisher', 'pages', 'keyword', 'journal', 'arxivid', 'booktitle',
             'doi', 'pmid', 'url', 'day', 'country', 'chapter', 'issue',
             'archive']
+EDITOR = os.environ.get('EDITOR', 'vim')
+
+
+@click.group()
+def cli():
+    """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
+    pass
 
 
 def create_config():
     """Creates configuration file."""
-    with open(CONFIG_FILE, 'w') as config:
-        config.write(
-            '# Configuration file for MendeleyBibTeXCleaner\n#\n# Comment with "#" (or delete) the lines corresponding to the keys\n# that you DO NOT want in the processed bib file.')
-        for key in ALL_KEYS:
-            config.write(key + '\n')
+    try:
+        if not os.path.isdir(CONFIG_FILE_PATH):
+            os.makedirs(CONFIG_FILE_PATH)
+        with open(CONFIG_FILE, 'w') as config:
+            config.write(
+                '# Configuration file for MendeleyBibTeXCleaner\n#\n# Comment with "#" (or delete) the lines corresponding to the keys\n# that you DO NOT want in the processed bib file.')
+            for key in ALL_KEYS:
+                config.write(key + '\n')
+        click.echo('\n{} created.\nPlease edit the configuration file before running the app again.\n'.format(
+            CONFIG_FILE))
+    except:
+        click.echo(click.style(
+            'ERROR, could not create configuration file!', fg='red'))
+    sys.exit(0)
 
 
 def load_config():
@@ -40,17 +57,7 @@ def load_config():
         click.echo(click.style('\nCould not find the file {}.\nCreating new configuration file...'.format(
             CONFIG_FILE), fg='red'))
         time.sleep(1)
-        try:
-            if not os.path.isdir(CONFIG_FILE_PATH):
-                os.makedirs(CONFIG_FILE_PATH)
-            create_config()
-            click.echo('\n{} created.\nPlease edit the configuration file before running the app again.\n'.format(
-                CONFIG_FILE))
-            # sys.exit(0)
-        except:
-            click.echo(click.style(
-                'ERROR, could not create configuration file!', fg='red'))
-        sys.exit(0)
+        create_config()
 
 
 def save_bib(bibliography, filename='bibliography.bib'):
@@ -91,7 +98,20 @@ def fix_month(bib_file):
             click.echo(line.rstrip())
 
 
-@click.command()
+@cli.command()
+def config():
+    """Opens the configuration file"""
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'a') as config_file:
+            call([EDITOR, config_file.name])
+    else:
+        click.echo(click.style('\nCould not find the configuration file {}.\nCreating new configuration file...'.format(
+            CONFIG_FILE), fg='red'))
+        time.sleep(1)
+        create_config()
+
+
+@cli.command()
 @click.argument('bib_file')
 @click.option('--save-to', default=None,
               help='Specify the name of the output file. By default it appends "edited" to the original filename.')
@@ -99,8 +119,8 @@ def fix_month(bib_file):
               help='Overwrites original file.')
 @click.option('--month', default=False, is_flag=True,
               help="Removes braces around the 'month' field.")
-def cli(bib_file=None, save_to=None, overwrite=False, month=False):
-    """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
+def clean(bib_file=None, save_to=None, overwrite=False, month=False):
+    """'Cleans' the BibTeX file"""
     # Loads the keys that need to be maintained
     good_keys = load_config()
 
