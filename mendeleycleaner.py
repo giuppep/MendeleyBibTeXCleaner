@@ -36,19 +36,20 @@ def load_config():
         good_keys.append('id')
         return good_keys
     except:
-        click.echo(click.style('\nCould not find the file {}. Creating new configuration file...'.format(
+        click.echo(click.style('\nCould not find the file {}.\nCreating new configuration file...'.format(
             CONFIG_FILE), fg='red'))
         time.sleep(1)
         try:
-            os.makedirs(CONFIG_FILE_PATH)
+            if not os.path.isdir(CONFIG_FILE_PATH):
+                os.makedirs(CONFIG_FILE_PATH)
             create_config()
-            click.echo('\n{} created.\n Please edit the configuration file before running the app again.\n'.format(
+            click.echo('\n{} created.\nPlease edit the configuration file before running the app again.\n'.format(
                 CONFIG_FILE))
-            sys.exit(0)
+            # sys.exit(0)
         except:
             click.echo(click.style(
-                'ERROR, could not create configuration file!'), fg='red')
-            sys.exit(0)
+                'ERROR, could not create configuration file!', fg='red'))
+        sys.exit(0)
 
 
 def save_bib(bibliography, filename='bibliography.bib'):
