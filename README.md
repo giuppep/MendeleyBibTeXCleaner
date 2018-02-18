@@ -28,7 +28,18 @@ $ pip3 install .
 
 ## Usage
 ```
-$ mendeleycleaner [OPTIONS] BIB_FILE
+$ mendeleycleaner COMMAND [ARGS] [OPTIONS] 
+```
+To 'clean' a file run
+```
+$ mendeleycleaner clean BIB_FILE.bib [OPTIONS]
+```
+The script will save the 'cleaned' file as `BIB_FILE_edited.bib`.
+This behaviour can be changed using appropriate options (see below).
+
+To edit the configuration file run
+```
+$ mendeleycleaner config
 ```
 
 At the first run, the script will create a configuration file in `~/.MedeleyBibTeXCleaner`
@@ -44,7 +55,7 @@ eprint
 address
 ```
 The user should edit the configuration file to their preferences before running the script.
-The script will return, by default another .bib file with `_edited` appended to the original filename.
+
 
 To display the help message, simply run
 ```
