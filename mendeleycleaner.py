@@ -120,7 +120,7 @@ def config():
 @click.option('--month', default=False, is_flag=True,
               help="Removes braces around the 'month' field.")
 def clean(bib_file=None, save_to=None, overwrite=False, month=False):
-    """'Cleans' the BibTeX file"""
+    """This command 'cleans' the BibTeX file"""
     # Loads the keys that need to be maintained
     good_keys = load_config()
 
