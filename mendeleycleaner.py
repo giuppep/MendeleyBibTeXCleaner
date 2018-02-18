@@ -3,9 +3,11 @@ import click
 import time
 import sys
 import fileinput
+import os
 import re
 
-CONFIG_FILE = 'config.ini'
+CONFIG_FILE_PATH = os.getenv("HOME") + '/.MendeleyBibTeXCleaner/'
+CONFIG_FILE = CONFIG_FILE_PATH + 'config.ini'
 ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
             'tags', 'volume', 'edition', 'issn', 'title', 'number',
             'archiveprefix', 'file', 'series', 'primaryclass', 'author',
@@ -28,7 +30,7 @@ def load_config():
     try:
         with open(CONFIG_FILE, 'r') as config:
             for line in config:
-                if line[0] is not '#':
+                if line.strip()[0] is not '#':
                     good_keys.append(line.strip())
         good_keys.append('entrytype')
         good_keys.append('id')
@@ -37,9 +39,11 @@ def load_config():
         click.echo(click.style('\nCould not find the file {}. Creating new configuration file...'.format(
             CONFIG_FILE), fg='red'))
         time.sleep(1)
-        create_config()
-        click.echo('\n{} created. Please edit the configuration file before running the app again.\n'.format(
-            CONFIG_FILE))
+        try:
+            os.makedirs(CONFIG_FILE_PATH)
+            create_config()
+            click.echo('\n{} created.\n Please edit the configuration file before running the app again.\n'.format(
+                CONFIG_FILE))
         sys.exit(0)
 
 
