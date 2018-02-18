@@ -12,7 +12,8 @@ ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
             'tags', 'volume', 'edition', 'issn', 'title', 'number',
             'archiveprefix', 'file', 'series', 'primaryclass', 'author',
             'publisher', 'pages', 'keyword', 'journal', 'arxivid', 'booktitle',
-            'doi', 'pmid', 'url', 'day', 'country', 'chapter', 'issue']
+            'doi', 'pmid', 'url', 'day', 'country', 'chapter', 'issue',
+            'archive']
 
 
 def create_config():
