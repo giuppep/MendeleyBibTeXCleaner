@@ -44,7 +44,11 @@ def load_config():
             create_config()
             click.echo('\n{} created.\n Please edit the configuration file before running the app again.\n'.format(
                 CONFIG_FILE))
-        sys.exit(0)
+            sys.exit(0)
+        except:
+            click.echo(click.style(
+                'ERROR, could not create configuration file!'), fg='red')
+            sys.exit(0)
 
 
 def save_bib(bibliography, filename='bibliography.bib'):
