@@ -79,10 +79,16 @@ def clean_keys(bibliography, good_keys=None):
 def rename_keys(bibliography):
     """Corrects certain keys names."""
     for entry in bibliography.entries:
-        for key in entry.keys():
-            if key.lower() is 'primaryclass':
-                entry['archive'] = entry.pop(key)
+        if 'primaryclass' in entry.keys():
+            entry['archive'] = entry.pop('primaryclass')
+        if 'link' in entry.keys():
+            entry['url'] = entry.pop('link')
     return bibliography
+
+
+def fix_year(bib_str):
+    """BibTexParser has some issue with the year not being within braces..."""
+    return re.sub(r'year = (\d\d\d\d)', r'year = {\g<1>}', bib_str)
 
 
 def fix_title_month(bib_file, fix_month):
@@ -91,7 +97,8 @@ def fix_title_month(bib_file, fix_month):
     with fileinput.input(bib_file, inplace=True) as bibtex:
         for line in bibtex:
             if 'title' in line:
-                line = re.sub(r'([^\\])([A-Z]\w*)', r'\g<1>{\g<2>}', line)
+                line = re.sub(r'([^\\|{|{A-Z])([A-Z]\w*)',
+                              r'\g<1>{\g<2>}', line)
                 line = re.sub(r'‐', '-', line)
             if fix_month:
                 if 'month' in line:
@@ -140,6 +147,7 @@ def clean(bib_file=None, save_to=None, overwrite=False, month=False):
     # Loads the original bibliography
     with open(bib_file, 'r') as f:
         bibliography_str = f.read()
+    bibliography_str = fix_year(bibliography_str)
     bibliography = btp.loads(bibliography_str, parser)
 
     # Renames certain non-standard keys
