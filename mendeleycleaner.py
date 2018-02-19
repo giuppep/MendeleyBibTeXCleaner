@@ -9,12 +9,9 @@ from subprocess import call
 
 CONFIG_FILE_PATH = os.getenv("HOME") + '/.MendeleyBibTeXCleaner/'
 CONFIG_FILE = CONFIG_FILE_PATH + 'config.ini'
-ALL_KEYS = ['link', 'month', 'isbn', 'eprint', 'address', 'abstract',
-            'tags', 'volume', 'edition', 'issn', 'title', 'number',
-            'archiveprefix', 'file', 'series', 'primaryclass', 'author',
-            'publisher', 'pages', 'keyword', 'journal', 'arxivid', 'booktitle',
-            'doi', 'pmid', 'url', 'day', 'country', 'chapter', 'issue',
-            'archive']
+DEFAULT_KEYS = ['author', 'title', 'journal', 'pages', 'volume',
+                'year', 'url', 'doi', 'archive', 'archiveprefix',
+                'primaryclass', 'arxivid', 'eprint', 'isbn']
 EDITOR = os.environ.get('EDITOR', 'vim')
 
 
@@ -31,8 +28,8 @@ def create_config():
             os.makedirs(CONFIG_FILE_PATH)
         with open(CONFIG_FILE, 'w') as config:
             config.write(
-                '# Configuration file for MendeleyBibTeXCleaner\n#\n# Comment with "#" (or delete) the lines corresponding to the keys\n# that you DO NOT want in the processed bib file.')
-            for key in ALL_KEYS:
+                '# Configuration file for MendeleyBibTeXCleaner\n#\n# Comment with "#" (or delete) the lines corresponding to the BibTeX fields\n# that you DO NOT want in the processed bib file.\n#If you want to include additional BibTeX fields, simply add them at the end of the file.')
+            for key in DEFAULT_KEYS:
                 config.write(key + '\n')
         click.echo('\n{} created.\nPlease edit the configuration file before running the app again.\n'.format(
             CONFIG_FILE))
