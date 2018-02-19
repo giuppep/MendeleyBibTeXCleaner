@@ -42,19 +42,23 @@ To edit the configuration file run
 $ mendeleycleaner config
 ```
 
-At the first run, the script will create a configuration file in `~/.MedeleyBibTeXCleaner`
+At the first run, the script will create a default configuration file in `~/.MedeleyBibTeXCleaner`
 The first few lines of the configuration file will look like
 ```
 # Configuration file for MendeleyBibTeXCleaner
 #
-# Comment with "#" (or delete) the lines corresponding to the keys
-# that you DO NOT want in the processed bib file.link
-month
-isbn
-eprint
-address
+# Comment with "#" (or delete) the lines corresponding to the BibTeX fields
+# that you DO NOT want in the processed bib file.
+# If you want to include additional BibTeX fields, simply add them at the
+# end of this file.
+author
+title
+journal
+pages
+...
 ```
-The user should edit the configuration file to their preferences before running the script.
+The user should edit the configuration file to their preferences before running the script. 
+The default config file will return a bibliography with minimal information.
 
 
 To display the help message, simply run
@@ -67,3 +71,9 @@ $ mendeleycleaner --help
 * `--month` will fix the month formatting.
 * `--save-to DESTINATION` allows the user to specify the destination file.
 * `--overwrite` overwrites the original .bib file.
+
+### Uninstall
+To uninstall the script, simply run
+```
+$ pip3 uninstall MendeleyBibTeXCleaner
+```
