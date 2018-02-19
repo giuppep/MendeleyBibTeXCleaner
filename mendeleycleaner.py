@@ -31,7 +31,7 @@ def create_config():
                 '# Configuration file for MendeleyBibTeXCleaner\n#\n# Comment with "#" (or delete) the lines corresponding to the BibTeX fields\n# that you DO NOT want in the processed bib file.\n# If you want to include additional BibTeX fields, simply add them at the\n# end of this file.\n')
             for key in DEFAULT_KEYS:
                 config.write(key + '\n')
-        click.echo('\n{} created.\nPlease edit the configuration file before running the app again.\n'.format(
+        click.echo('\n{} created.\nRun the "config" command to edit the default configuration.\n'.format(
             CONFIG_FILE))
     except:
         click.echo(click.style(
