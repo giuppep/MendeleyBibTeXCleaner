@@ -99,7 +99,7 @@ def fix_title_month(bib_file, fix_month):
             if 'title' in line:
                 line = re.sub(r'([^\\|{|{A-Z])([A-Z]\w*)',
                               r'\g<1>{\g<2>}', line)
-                line = re.sub(r'‐', '-', line)
+                line = re.sub(r'‐|–', '-', line)
             if fix_month:
                 if 'month' in line:
                     line = re.sub(r'{(\w\w\w)}', r'\g<1>', line)
