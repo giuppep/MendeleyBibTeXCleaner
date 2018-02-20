@@ -15,6 +15,9 @@ DEFAULT_KEYS = ['author', 'title', 'journal', 'pages', 'volume',
 EDITOR = os.environ.get('EDITOR', 'vim')
 
 
+@click.version_option(prog_name='MendeleyBibTeXCleaner',
+                      message='%(prog)s by giuppep, version %(version)s.\
+                      \nhttps://github.com/giuppep/MendeleyBibTeXCleaner')
 @click.group()
 def cli():
     """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
