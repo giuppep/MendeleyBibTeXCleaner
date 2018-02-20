@@ -16,8 +16,8 @@ EDITOR = os.environ.get('EDITOR', 'vim')
 
 
 @click.version_option(prog_name='MendeleyBibTeXCleaner',
-                      message='%(prog)s by giuppep, version %(version)s.\
-                      \nhttps://github.com/giuppep/MendeleyBibTeXCleaner')
+                      message='\n%(prog)s by giuppep, version %(version)s.\
+                      \nhttps://github.com/giuppep/MendeleyBibTeXCleaner\n')
 @click.group()
 def cli():
     """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
