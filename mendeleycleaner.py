@@ -13,14 +13,16 @@ DEFAULT_KEYS = ['author', 'title', 'journal', 'pages', 'volume',
                 'year', 'url', 'doi', 'archive', 'archiveprefix',
                 'primaryclass', 'arxivid', 'eprint', 'isbn']
 EDITOR = os.environ.get('EDITOR', 'vim')
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
 @click.version_option(prog_name='MendeleyBibTeXCleaner',
                       message='\n%(prog)s by giuppep, version %(version)s.\
                       \nhttps://github.com/giuppep/MendeleyBibTeXCleaner\n')
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
-    """This app 'cleans' the BibTeX file exported by Mendeley. The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
+    """This app 'cleans' the BibTeX file exported by Mendeley.
+    The user must specify in the file 'config.ini' which BibTeX fields (e.g. author, title...) should be mantained; all other fields will be deleted."""
     pass
 
 
@@ -89,12 +91,12 @@ def rename_keys(bibliography):
     return bibliography
 
 
-def fix_year(bib_str):
+def pre_processing(bib_str):
     """BibTexParser has some issue with the year not being within braces..."""
     return re.sub(r'year = (\d\d\d\d)', r'year = {\g<1>}', bib_str)
 
 
-def fix_title_month(bib_file, fix_month):
+def post_processing(bib_file, fix_month):
     """Fixes a problem with capitalisation in the title. This is because BibTexParser strips all braces from the title. If the fix_month flag is turned on then it also fixes the 'month' field by removing braces. Both Mendeley and BibTexParser print the month within braces (e.g. {jun}) which does not work correctly with BibTeX."""
 
     with fileinput.input(bib_file, inplace=True) as bibtex:
@@ -111,7 +113,7 @@ def fix_title_month(bib_file, fix_month):
 
 @cli.command()
 def config():
-    """Opens the configuration file"""
+    """Open the configuration file."""
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'a') as config_file:
             call([EDITOR, config_file.name])
@@ -131,7 +133,7 @@ def config():
 @click.option('--month', default=False, is_flag=True,
               help="Removes braces around the 'month' field.")
 def clean(bib_file=None, save_to=None, overwrite=False, month=False):
-    """This command 'cleans' the BibTeX file"""
+    """'Clean' the BibTeX file (according to the config file)."""
     # Loads the keys that need to be maintained
     good_keys = load_config()
 
@@ -150,7 +152,7 @@ def clean(bib_file=None, save_to=None, overwrite=False, month=False):
     # Loads the original bibliography
     with open(bib_file, 'r') as f:
         bibliography_str = f.read()
-    bibliography_str = fix_year(bibliography_str)
+    bibliography_str = pre_processing(bibliography_str)
     bibliography = btp.loads(bibliography_str, parser)
 
     # Renames certain non-standard keys
@@ -164,4 +166,4 @@ def clean(bib_file=None, save_to=None, overwrite=False, month=False):
 
     # Fixes the title output
     # If --month flag is active, it fixes the 'month' field formatting
-    fix_title_month(save_to, month)
+    post_processing(save_to, month)
